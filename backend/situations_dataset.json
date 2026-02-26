@@ -1,0 +1,512 @@
+[
+  {
+    "situation": "School",
+    "emotions": [
+      "Focused",
+      "Anxious",
+      "Tired",
+      "Curious",
+      "Stressed",
+      "Accomplished"
+    ],
+    "intensities": [
+      3,
+      4,
+      2,
+      3,
+      5,
+      4
+    ],
+    "tags": [
+      "Exam",
+      "Homework",
+      "Class",
+      "Presentation",
+      "Results"
+    ],
+    "entry_score": -0.25,
+    "tag_adjustment": 0.1,
+    "final_adjusted": -0.15,
+    "normalized_score": 48
+  },
+  {
+    "situation": "Work",
+    "emotions": [
+      "Stressed",
+      "Anxious",
+      "Tired",
+      "Motivated",
+      "Confident",
+      "Happy"
+    ],
+    "intensities": [
+      4,
+      3,
+      5,
+      2,
+      4,
+      3
+    ],
+    "tags": [
+      "Deadline",
+      "Teamwork",
+      "Overtime",
+      "Promotion",
+      "Meeting"
+    ],
+    "entry_score": -0.45,
+    "tag_adjustment": 0.12,
+    "final_adjusted": -0.33,
+    "normalized_score": 42
+  },
+  {
+    "situation": "Period Symptoms",
+    "emotions": [
+      "Irritated",
+      "Fatigued",
+      "Sensitive",
+      "Relieved",
+      "Calm"
+    ],
+    "intensities": [
+      5,
+      4,
+      3,
+      2,
+      2
+    ],
+    "tags": [
+      "Cramps",
+      "Bloating",
+      "Rest",
+      "Comfort",
+      "Mood swings"
+    ],
+    "entry_score": -0.52,
+    "tag_adjustment": 0.08,
+    "final_adjusted": -0.44,
+    "normalized_score": 38
+  },
+  {
+    "situation": "Bad Habits",
+    "emotions": [
+      "Guilty",
+      "Ashamed",
+      "Determined",
+      "Tired",
+      "Neutral"
+    ],
+    "intensities": [
+      5,
+      4,
+      3,
+      2,
+      1
+    ],
+    "tags": [
+      "Procrastination",
+      "Junk Food",
+      "Oversleep",
+      "Late Night",
+      "Scrolling"
+    ],
+    "entry_score": -0.6,
+    "tag_adjustment": 0.15,
+    "final_adjusted": -0.45,
+    "normalized_score": 35
+  },
+  {
+    "situation": "Emotions",
+    "emotions": [
+      "Happy",
+      "Sad",
+      "Angry",
+      "Peaceful",
+      "Excited",
+      "Lonely"
+    ],
+    "intensities": [
+      3,
+      4,
+      3,
+      4,
+      5,
+      2
+    ],
+    "tags": [
+      "Mood swings",
+      "Reflection",
+      "Growth",
+      "Self-awareness",
+      "Balance"
+    ],
+    "entry_score": -0.2,
+    "tag_adjustment": 0.22,
+    "final_adjusted": 0.02,
+    "normalized_score": 55
+  },
+  {
+    "situation": "Moon",
+    "emotions": [
+      "Calm",
+      "Restless",
+      "Inspired",
+      "Sleepy",
+      "Reflective"
+    ],
+    "intensities": [
+      3,
+      4,
+      3,
+      5,
+      4
+    ],
+    "tags": [
+      "Full Moon",
+      "New Moon",
+      "Energy",
+      "Dreams",
+      "Manifest"
+    ],
+    "entry_score": -0.1,
+    "tag_adjustment": 0.18,
+    "final_adjusted": 0.08,
+    "normalized_score": 60
+  },
+  {
+    "situation": "Weather",
+    "emotions": [
+      "Lazy",
+      "Energetic",
+      "Calm",
+      "Bored",
+      "Relaxed"
+    ],
+    "intensities": [
+      3,
+      4,
+      3,
+      2,
+      5
+    ],
+    "tags": [
+      "Rainy",
+      "Sunny",
+      "Cold",
+      "Windy",
+      "Cloudy"
+    ],
+    "entry_score": -0.05,
+    "tag_adjustment": 0.1,
+    "final_adjusted": 0.05,
+    "normalized_score": 58
+  },
+  {
+    "situation": "Places",
+    "emotions": [
+      "Excited",
+      "Curious",
+      "Relaxed",
+      "Anxious",
+      "Happy"
+    ],
+    "intensities": [
+      4,
+      3,
+      5,
+      2,
+      4
+    ],
+    "tags": [
+      "Home",
+      "Office",
+      "Cafe",
+      "Beach",
+      "Mountains"
+    ],
+    "entry_score": -0.12,
+    "tag_adjustment": 0.2,
+    "final_adjusted": 0.08,
+    "normalized_score": 62
+  },
+  {
+    "situation": "Beauty",
+    "emotions": [
+      "Confident",
+      "Insecure",
+      "Happy",
+      "Calm",
+      "Motivated"
+    ],
+    "intensities": [
+      4,
+      3,
+      5,
+      3,
+      2
+    ],
+    "tags": [
+      "Skincare",
+      "Self-care",
+      "Mirror",
+      "Makeup",
+      "Spa"
+    ],
+    "entry_score": -0.18,
+    "tag_adjustment": 0.25,
+    "final_adjusted": 0.07,
+    "normalized_score": 63
+  },
+  {
+    "situation": "Productivity",
+    "emotions": [
+      "Focused",
+      "Lazy",
+      "Satisfied",
+      "Tired",
+      "Motivated"
+    ],
+    "intensities": [
+      5,
+      2,
+      4,
+      3,
+      5
+    ],
+    "tags": [
+      "Task Complete",
+      "Pomodoro",
+      "Deadline",
+      "Distraction",
+      "Goal"
+    ],
+    "entry_score": -0.1,
+    "tag_adjustment": 0.3,
+    "final_adjusted": 0.2,
+    "normalized_score": 70
+  },
+  {
+    "situation": "Romance",
+    "emotions": [
+      "Loved",
+      "Lonely",
+      "Happy",
+      "Sad",
+      "Excited"
+    ],
+    "intensities": [
+      5,
+      3,
+      4,
+      2,
+      5
+    ],
+    "tags": [
+      "Date",
+      "Text",
+      "Memory",
+      "Breakup",
+      "Connection"
+    ],
+    "entry_score": -0.15,
+    "tag_adjustment": 0.2,
+    "final_adjusted": 0.05,
+    "normalized_score": 58
+  },
+  {
+    "situation": "Chores",
+    "emotions": [
+      "Tired",
+      "Productive",
+      "Bored",
+      "Satisfied",
+      "Calm"
+    ],
+    "intensities": [
+      4,
+      3,
+      2,
+      5,
+      3
+    ],
+    "tags": [
+      "Cleaning",
+      "Cooking",
+      "Laundry",
+      "Organizing",
+      "Shopping"
+    ],
+    "entry_score": -0.12,
+    "tag_adjustment": 0.22,
+    "final_adjusted": 0.1,
+    "normalized_score": 61
+  },
+  {
+    "situation": "Better Me",
+    "emotions": [
+      "Motivated",
+      "Confident",
+      "Focused",
+      "Tired",
+      "Grateful"
+    ],
+    "intensities": [
+      5,
+      4,
+      4,
+      3,
+      5
+    ],
+    "tags": [
+      "Growth",
+      "Reading",
+      "Meditation",
+      "Workout",
+      "Routine"
+    ],
+    "entry_score": -0.05,
+    "tag_adjustment": 0.35,
+    "final_adjusted": 0.3,
+    "normalized_score": 75
+  },
+  {
+    "situation": "Health",
+    "emotions": [
+      "Healthy",
+      "Weak",
+      "Energetic",
+      "Sick",
+      "Grateful"
+    ],
+    "intensities": [
+      5,
+      3,
+      4,
+      2,
+      4
+    ],
+    "tags": [
+      "Workout",
+      "Diet",
+      "Medicine",
+      "Rest",
+      "Hydration"
+    ],
+    "entry_score": -0.08,
+    "tag_adjustment": 0.28,
+    "final_adjusted": 0.2,
+    "normalized_score": 68
+  },
+  {
+    "situation": "Food",
+    "emotions": [
+      "Satisfied",
+      "Guilty",
+      "Happy",
+      "Lazy",
+      "Energetic"
+    ],
+    "intensities": [
+      5,
+      3,
+      4,
+      2,
+      3
+    ],
+    "tags": [
+      "Healthy",
+      "Cheat Meal",
+      "Snack",
+      "Breakfast",
+      "Dinner"
+    ],
+    "entry_score": -0.18,
+    "tag_adjustment": 0.25,
+    "final_adjusted": 0.07,
+    "normalized_score": 63
+  },
+  {
+    "situation": "Sleep",
+    "emotions": [
+      "Rested",
+      "Tired",
+      "Dreamy",
+      "Lazy",
+      "Calm"
+    ],
+    "intensities": [
+      5,
+      4,
+      3,
+      2,
+      4
+    ],
+    "tags": [
+      "Nap",
+      "Insomnia",
+      "Deep Sleep",
+      "Nightmare",
+      "Oversleep"
+    ],
+    "entry_score": -0.22,
+    "tag_adjustment": 0.3,
+    "final_adjusted": 0.08,
+    "normalized_score": 60
+  },
+  {
+    "situation": "Hobbies",
+    "emotions": [
+      "Relaxed",
+      "Creative",
+      "Excited",
+      "Focused",
+      "Happy"
+    ],
+    "intensities": [
+      4,
+      5,
+      4,
+      3,
+      5
+    ],
+    "tags": [
+      "Music",
+      "Art",
+      "Gaming",
+      "Reading",
+      "Crafting"
+    ],
+    "entry_score": -0.1,
+    "tag_adjustment": 0.32,
+    "final_adjusted": 0.22,
+    "normalized_score": 72
+  },
+  {
+    "situation": "Social",
+    "emotions": [
+      "Excited",
+      "Nervous",
+      "Happy",
+      "Confident",
+      "Drained"
+    ],
+    "intensities": [
+      5,
+      3,
+      4,
+      4,
+      2
+    ],
+    "tags": [
+      "Party",
+      "Friends",
+      "Event",
+      "Conversation",
+      "Crowd"
+    ],
+    "entry_score": -0.12,
+    "tag_adjustment": 0.28,
+    "final_adjusted": 0.16,
+    "normalized_score": 67
+  }
+]

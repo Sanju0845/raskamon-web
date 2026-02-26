@@ -1,2 +1,5 @@
 mobile/
 ngrok*
+package-lock.json
+*.pdf
+node_modules/

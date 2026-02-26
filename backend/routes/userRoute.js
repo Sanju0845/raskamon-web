@@ -19,6 +19,7 @@ import {
   verifyResetOTP,
   resetPassword,
   phoneLogin,
+  verifyPassword,
 } from "../controllers/userController.js";
 import authUser from "../middlewares/authUser.js";
 import upload from "../middlewares/multer.js";
@@ -36,6 +37,7 @@ userRouter.post("/verify-otp", verifyOTP);
 userRouter.post("/forgot-password", forgotPassword);
 userRouter.post("/verify-reset-otp", verifyResetOTP);
 userRouter.post("/reset-password", resetPassword);
+userRouter.post("/verify-password", authUser, verifyPassword);
 userRouter.get("/location", getLocationData);
 userRouter.get("/get-geolocation", getGeoLocation);
 

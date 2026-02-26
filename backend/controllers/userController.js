@@ -528,7 +528,7 @@ const bookAppointmentCredits = async (req, res) => {
       sessionType,
       communicationMethod,
       briefNotes,
-      emergencyContact: emergencyContact ? JSON.parse(emergencyContact) : {},
+      emergencyContact: emergencyContact ? (typeof emergencyContact === 'string' ? JSON.parse(emergencyContact) : emergencyContact) : {},
       consentGiven: consentGiven === "true" || consentGiven === true,
       uploadedReports,
     };
@@ -1512,14 +1512,117 @@ const phoneLogin = async (req, res) => {
       message: "Phone login failed. Please try again.",
     });
   }
+
+  // Verify Firebase token
+  let decodedToken;
+  try {
+    decodedToken = await verifyFirebaseToken(firebaseIdToken);
+  } catch (error) {
+    console.error("Firebase token verification error:", error);
+    return res.status(401).json({
+      success: false,
+      message: "Invalid or expired token. Please try again.",
+    });
+  }
+
+  const phoneNumber = decodedToken.phone_number;
+  const firebaseUid = decodedToken.uid;
+
+  if (!phoneNumber) {
+    return res.status(400).json({
+      success: false,
+      message: "Phone number not found in token",
+    });
+  }
+
+  // Check if user exists with this phone number
+  let user = await userModel.findOne({ phone: phoneNumber });
+
+  if (user) {
+    // User exists - login
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+    return res.status(200).json({
+      success: true,
+      token,
+      isNewUser: false,
+      message: "Login successful!",
+    });
+  }
+
+  user = await userModel.findOne({ firebaseUid });
+
+  if (user) {
+
+    user.phone = phoneNumber;
+    await user.save();
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+    return res.status(200).json({
+      success: true,
+      token,
+      isNewUser: false,
+      message: "Login successful!",
+    });
+  }
+
+  // New user - create account
+  try {
+    const newUser = new userModel({
+      name: `User_${phoneNumber.slice(-4)}`,
+      phone: phoneNumber,
+      firebaseUid,
+      emailVerified: false,
+      email: `${phoneNumber.replace("+", "")}@phone.user`,
+    });
+
+    await newUser.save();
+    const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET);
+
+    res.status(201).json({
+      success: true,
+      token,
+      isNewUser: true,
+      message: "Account created successfully! Welcome to Raska Mon.",
+    });
+  } catch (error) {
+    console.error("Phone Login Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Phone login failed. Please try again.",
+    });
+  }
+};
+
+// Verify user password for credit spending confirmation
+const verifyPassword = async (req, res) => {
+  try {
+    const { password } = req.body;
+    const userId = req.user.id;
+
+    // Get user with password
+    const user = await userModel.findById(userId).select('+password');
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    // Compare password
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ success: false, message: 'Incorrect password' });
+    }
+
+    res.status(200).json({ success: true, message: 'Password verified' });
+  } catch (error) {
+    console.error('Password verification error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
 };
 
 // export all user controllers
+
 export {
-  registerUser,
-  loginUser,
-  googleLogin,
   getProfile,
+  loginUser,
+  registerUser,
   updateProfile,
   bookAppointment,
   bookAppointmentCredits,
@@ -1527,6 +1630,7 @@ export {
   cancelAppointment,
   paymentRazorpay,
   verifyRazorpay,
+  googleLogin,
   getSlotAvailability,
   cancelPayment,
   uploadReport,
@@ -1536,5 +1640,5 @@ export {
   verifyResetOTP,
   resetPassword,
   phoneLogin,
+  verifyPassword,
 };
-

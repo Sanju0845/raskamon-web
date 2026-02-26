@@ -50,6 +50,9 @@ const AppointmentForm = ({
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [tempReservationId, setTempReservationId] = useState(null);
   const [appointmentFormData, setAppointmentFormData] = useState(null);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [password, setPassword] = useState("");
+  const [passwordLoading, setPasswordLoading] = useState(false);
 
   const reasonsForVisit = [
     "Anxiety",
@@ -128,8 +131,15 @@ const AppointmentForm = ({
   };
 
   const handlePaymentMethodSelected = async (paymentMethod, appointmentData) => {
+    console.log('Payment method selected:', paymentMethod);
     if (paymentMethod === "credits") {
-      await handleCreditsPayment(appointmentData);
+      console.log('Setting up password modal');
+      setAppointmentFormData(appointmentData);
+      setShowPaymentModal(false); // Close payment modal first
+      setTimeout(() => {
+        setShowPasswordModal(true);
+        console.log('Password modal should show now');
+      }, 300);
     } else if (paymentMethod === "razorpay") {
       await handleRazorpayPayment(tempReservationId);
     }
@@ -174,6 +184,39 @@ const AppointmentForm = ({
     } catch (error) {
       console.error("Credits payment error:", error);
       toast.error(error.response?.data?.message || "Failed to book appointment with credits");
+    }
+  };
+
+  const verifyPasswordAndBook = async () => {
+    if (!password) {
+      toast.error("Please enter your password");
+      return;
+    }
+
+    setPasswordLoading(true);
+    try {
+      const response = await axios.post(
+        `${backendUrl}/api/user/verify-password`,
+        { password },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.data.success) {
+        setShowPasswordModal(false);
+        setPassword("");
+        await handleCreditsPayment(appointmentFormData);
+      } else {
+        toast.error("Incorrect password");
+      }
+    } catch (error) {
+      console.error("Password verification error:", error);
+      toast.error(error.response?.data?.message || "Password verification failed");
+    } finally {
+      setPasswordLoading(false);
     }
   };
 
@@ -859,6 +902,83 @@ const AppointmentForm = ({
   return (
     <>
       {createPortal(modalContent, document.body)}
+      
+      {/* Password Confirmation Modal */}
+      {createPortal(
+        <AnimatePresence>
+          {showPasswordModal && (
+            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[999999]">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                className="bg-white rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl"
+              >
+              <div className="text-center mb-6">
+                <div className="w-16 h-16 bg-gradient-to-r from-purple-100 to-pink-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <FaShieldAlt className="text-2xl text-purple-600" />
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                  Confirm Your Identity
+                </h3>
+                <p className="text-gray-600">
+                  Enter your password to confirm spending {docInfo?.fees || "0"} credits
+                </p>
+              </div>
+
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Password
+                </label>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  placeholder="Enter your password"
+                  autoFocus
+                />
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => {
+                    setShowPasswordModal(false);
+                    setPassword("");
+                  }}
+                  className="flex-1 px-4 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors font-medium"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={verifyPasswordAndBook}
+                  disabled={passwordLoading || !password}
+                  className={`flex-1 px-4 py-3 rounded-xl font-medium transition-all flex items-center justify-center gap-2 ${
+                    passwordLoading || !password
+                      ? "bg-gray-400 text-gray-600 cursor-not-allowed"
+                      : "bg-gradient-to-r from-purple-500 to-indigo-500 text-white hover:from-purple-600 hover:to-indigo-600 hover:shadow-lg"
+                  }`}
+                >
+                  {passwordLoading ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      Verifying...
+                    </>
+                  ) : (
+                    <>
+                      <FaCheckCircle />
+                      Confirm & Book
+                    </>
+                  )}
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+        </AnimatePresence>,
+        document.body
+      )}
+
       <PaymentMethodModal
         isOpen={showPaymentModal}
         onClose={() => setShowPaymentModal(false)}

@@ -29,8 +29,10 @@ const doctorList = async (req, res) => {
     const doctors = await doctorModel
       .find({ is_hidden: false })
       .select(["-password", "-email"]);
+    console.log('Found doctors:', doctors.length);
     res.status(201).json({ success: true, doctors });
   } catch (error) {
+    console.error('Error in doctorList:', error);
     res
       .status(500)
       .json({ success: false, message: `Server error: ${error.message}` });

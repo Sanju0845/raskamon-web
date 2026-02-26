@@ -60,7 +60,10 @@ const PaymentMethodModal = ({
     setLoading(true);
     try {
       await onPaymentMethodSelected(selectedMethod, appointmentData);
-      onClose();
+      // Only close if not using credits (credits will handle their own closing)
+      if (selectedMethod !== "credits") {
+        onClose();
+      }
     } catch (error) {
       console.error("Payment processing error:", error);
     } finally {

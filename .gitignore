@@ -3,3 +3,7 @@ ngrok*
 package-lock.json
 *.pdf
 node_modules/
+*.tgz
+service-account.json
+add-credits-*.js
+add-credits-*.cjs

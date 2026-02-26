@@ -9,6 +9,7 @@ import { clearAllTokens } from "../utils/tokenUtils";
 import NotificationBell from "./NotificationBell";
 import CreditsDisplay from "./CreditsDisplay.jsx";
 import CreditsPurchaseModal from "./CreditsPurchaseModal.jsx";
+import axios from "axios";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -119,6 +120,17 @@ const Navbar = () => {
 
   useEffect(() => {
     fetchUserCredits();
+  }, [token]);
+
+  // Refresh credits every 30 seconds
+  useEffect(() => {
+    if (!token) return;
+    
+    const interval = setInterval(() => {
+      fetchUserCredits();
+    }, 30000); // 30 seconds
+    
+    return () => clearInterval(interval);
   }, [token]);
 
   const handlePurchaseSuccess = () => {

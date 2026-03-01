@@ -48,9 +48,7 @@ mongoose.connection.once("open", async () => {
 });
 
 // -------- middlewares ---------
-app.use(express.json({ limit: "400mb" }));
-
-// CORS configuration - allow all origins for now
+// CORS FIRST - before any other middleware
 app.use(
   cors({
     origin: "*",
@@ -66,8 +64,16 @@ app.use(
   }),
 );
 
-// Handle OPTIONS preflight requests explicitly
-app.options("*", cors());
+// Handle OPTIONS preflight requests at the TOP level
+app.options("*", (req, res) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization, token, atoken, dtoken");
+  res.header("Access-Control-Allow-Credentials", "true");
+  res.sendStatus(200);
+});
+
+app.use(express.json({ limit: "400mb" }));
 
 // Add CORS headers to all responses (including error responses)
 app.use((req, res, next) => {

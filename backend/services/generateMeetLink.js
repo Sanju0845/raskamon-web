@@ -21,9 +21,19 @@ export const parseAppointmentDate = (dateStr, timeStr) => {
   return date;
 };
 
-const credentials = process.env.GOOGLE_SERVICE_ACCOUNT
-  ? JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT)
-  : JSON.parse(fs.readFileSync("./service-account.json", "utf8"));
+let credentials = null;
+
+try {
+  if (process.env.GOOGLE_SERVICE_ACCOUNT) {
+    credentials = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT);
+  } else if (fs.existsSync("./service-account.json")) {
+    credentials = JSON.parse(fs.readFileSync("./service-account.json", "utf8"));
+  } else {
+    console.warn("⚠️  Google Meet: No credentials found. Meet link generation disabled.");
+  }
+} catch (error) {
+  console.error("Error loading Google credentials:", error.message);
+}
 
 // const CREDENTIALS_PATH = path.join(process.cwd(), "service-account.json");
 const WORKSPACE_HOST_EMAIL = process.env.WORKSPACE_HOST_EMAIL;
@@ -34,6 +44,12 @@ const SCOPES = [
 
 export const generateGoogleMeetLink = async (appointment) => {
   try {
+    // Return null if no credentials available
+    if (!credentials) {
+      console.log("📅 No Google credentials, skipping Meet link generation");
+      return null;
+    }
+    
     console.log(`📅 Creating Google Meet for appointment ${appointment._id}`);
 
     const auth = new google.auth.GoogleAuth({

@@ -102,9 +102,15 @@ app.use((err, req, res, next) => {
 });
 
 // -------- port listen -------
-app.listen(port, () => {
-  console.log("🚀 Server running on port", port);
+// Only listen if not running on Vercel (Vercel handles this)
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(port, () => {
+    console.log("🚀 Server running on port", port);
 
-  notificationService.start();
-  console.log("🔔 Notification service started");
-});
+    notificationService.start();
+    console.log("🔔 Notification service started");
+  });
+}
+
+// Export for Vercel
+export default app;

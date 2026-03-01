@@ -12,10 +12,14 @@ const router = express.Router();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Create uploads directory if it doesn't exist
+// Create uploads directory if it doesn't exist (skip on Vercel)
 const uploadsDir = path.join(__dirname, "../uploads");
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
+try {
+  if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+  }
+} catch (error) {
+  console.warn("⚠️  Uploads directory creation skipped (read-only filesystem)");
 }
 
 // Configure multer for image uploads

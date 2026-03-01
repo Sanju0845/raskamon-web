@@ -16,6 +16,7 @@ import {
 } from "react-icons/fa";
 import axios from "axios";
 import CreditsDisplay from "../components/CreditsDisplay.jsx";
+import DoctorReviews from "../components/DoctorReviews.jsx";
 const Doctors = () => {
   const { speciality } = useParams();
   const [filterDoc, setFilterDoc] = useState([]);

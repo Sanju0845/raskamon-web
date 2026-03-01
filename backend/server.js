@@ -5,24 +5,25 @@ import "dotenv/config";
 import mongoose from "mongoose";
 import connectDB from "./config/mongodb.js";
 import connectCloudinary from "./config/cloudinary.js";
-import adminRouter from "./routes/adminRoute.js";
-import doctorRouter from "./routes/doctorRoute.js";
-import userRouter from "./routes/userRoute.js";
-import assessmentRouter from "./routes/assessmentRoute.js";
-import testimonialRouter from "./routes/testimonialRoute.js";
-import blogPostRouter from "./routes/blogPostRoute.js";
-import uploadRouter from "./routes/uploadRoute.js";
-import moodTrackingRouter from "./routes/moodTrackingRoute.js";
-import notificationRouter from "./routes/notificationRoute.js";
-import notificationService from "./services/notificationService.js";
-import analyticsRouter from "./routes/userAnalyticsRoute.js";
-import chatRouter from "./routes/chatRoute.js";
-import moodRoute from "./routes/moodRoute.js";
-import voiceRouter from "./routes/voiceRoute.js";
-import creditsRouter from "./routes/creditsRoute.js";
-import doctorChatRouter from "./routes/doctorChatRoute.js";
-import liveChatRouter from "./routes/liveChatRoute.js";
-import { verifyGeoIndex } from "./utils/verifyGeoIndex.js";
+// routes
+import adminRouter from './routes/adminRoute.js';
+import userRouter from './routes/userRoute.js';
+import doctorRouter from './routes/doctorRoute.js';
+import doctorChatRouter from './routes/doctorChatRoute.js';
+import liveChatRouter from './routes/liveChatRoute.js';
+import reviewRouter from './routes/reviewRoute.js';
+import assessmentRouter from './routes/assessmentRoute.js';
+import testimonialRouter from './routes/testimonialRoute.js';
+import analyticsRouter from './routes/userAnalyticsRoute.js';
+import chatRouter from './routes/chatRoute.js';
+import moodRoute from './routes/moodRoute.js';
+import voiceRouter from './routes/voiceRoute.js';
+import creditsRouter from './routes/creditsRoute.js';
+import blogPostRouter from './routes/blogPostRoute.js';
+import uploadRouter from './routes/uploadRoute.js';
+import moodTrackingRouter from './routes/moodTrackingRoute.js';
+import notificationRouter from './routes/notificationRoute.js';
+import notificationService from './services/notificationService.js';
 
 // -------- app config ----------
 const app = express();
@@ -80,6 +81,7 @@ app.use("/api/voice", voiceRouter);
 app.use("/api/credits", creditsRouter);
 app.use("/api/doctor-chat", doctorChatRouter);
 app.use("/api/live-chat", liveChatRouter);
+app.use("/api/reviews", reviewRouter);
 
 app.get("/", (req, res) => {
   res.send("API WORKING...");

@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import ProgressBar from "../components/ProgressBar";
+import ReviewForm from "../components/ReviewForm";
 import {
   FaCalendarAlt,
   FaClock,
@@ -31,6 +32,8 @@ const MyAppointments = () => {
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [loadingPayment, setLoadingPayment] = useState({});
   const [loadingCancel, setLoadingCancel] = useState({});
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [selectedAppointment, setSelectedAppointment] = useState(null);
 
   const navigate = useNavigate();
 
@@ -551,9 +554,26 @@ const MyAppointments = () => {
                                 <motion.button
                                   className="text-sm w-full px-4 py-3 border border-green-300 rounded-xl cursor-not-allowed bg-green-50 text-green-700 font-semibold flex items-center justify-center gap-2"
                                   whileHover={{ scale: 1.02 }}
+                                  whileTap={{ scale: 0.98 }}
                                 >
-                                  <FaCheckCircle className="text-green-500" />
-                                  Paid
+                                  <FaCheckCircle className="text-green-600" />
+                                  Payment Confirmed
+                                </motion.button>
+                              )}
+
+                              {/* Review Button - shown for completed appointments */}
+                              {!item.cancelled && item.isCompleted && (
+                                <motion.button
+                                  onClick={() => {
+                                    setSelectedAppointment(item);
+                                    setShowReviewForm(true);
+                                  }}
+                                  className="text-sm w-full px-4 py-3 bg-yellow-500 text-white rounded-xl hover:bg-yellow-600 transition-all duration-200 font-semibold flex items-center justify-center gap-2"
+                                  whileHover={{ scale: 1.02 }}
+                                  whileTap={{ scale: 0.98 }}
+                                >
+                                  <FaStar />
+                                  Write Review
                                 </motion.button>
                               )}
 
@@ -639,6 +659,21 @@ const MyAppointments = () => {
       >
         <FaHeart className="text-xl" />
       </motion.button>
+
+      {/* Review Form Modal */}
+      {showReviewForm && selectedAppointment && (
+        <ReviewForm
+          appointment={selectedAppointment}
+          onClose={() => {
+            setShowReviewForm(false);
+            setSelectedAppointment(null);
+          }}
+          onReviewSubmit={() => {
+            // Refresh appointments to update review status
+            getUserAppointments();
+          }}
+        />
+      )}
     </div>
   );
 };

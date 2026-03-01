@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import RelatedDoctor from "../components/RelatedDoctor";
 import AppointmentForm from "../components/AppointmentForm";
+import DoctorReviews from "../components/DoctorReviews";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { motion } from "framer-motion";
@@ -966,6 +967,13 @@ const Appointment = () => {
                   Continue to Details
                 </motion.button>
               </motion.div>
+            </div>
+          </section>
+
+          {/* Reviews Section */}
+          <section className="py-16">
+            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+              <DoctorReviews doctorId={docId} />
             </div>
           </section>
 

@@ -39,6 +39,9 @@ adminRouter.put(
   updateDoctor
 );
 adminRouter.post("/login", loginAdmin);
+adminRouter.get("/login", (req, res) => {
+  res.json({ message: "Admin login route is working - use POST to login" });
+});
 adminRouter.post("/all-doctors", authAdmin, allDoctors);
 adminRouter.get("/doctor/:id", authAdmin, getDoctorById);
 adminRouter.delete("/delete/:id", authAdmin, deleteDoctorById);

@@ -1,7 +1,7 @@
 import express from 'express';
-import { createReview, getDoctorReviews, getUserReviews, getAllReviews, updateReviewStatus } from '../controllers/reviewController.js';
+import { createReview, getDoctorReviews, getUserReviews, getAllReviews, updateReviewStatus, deleteReview } from '../controllers/reviewController.js';
 import authUser from '../middlewares/authUser.js';
-import authDoctor from '../middlewares/authDoctor.js';
+import authAdmin from '../middlewares/authAdmin.js';
 
 const router = express.Router();
 
@@ -13,7 +13,8 @@ router.get('/user/reviews', authUser, getUserReviews);
 router.get('/doctor/:doctorId', getDoctorReviews);
 
 // Admin routes (for review management)
-router.get('/all', authDoctor, getAllReviews);
-router.put('/:reviewId/status', authDoctor, updateReviewStatus);
+router.get('/all', authAdmin, getAllReviews);
+router.put('/:reviewId/status', authAdmin, updateReviewStatus);
+router.delete('/:reviewId', authAdmin, deleteReview);
 
 export default router;

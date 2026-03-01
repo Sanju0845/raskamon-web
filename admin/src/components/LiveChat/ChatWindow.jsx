@@ -47,7 +47,7 @@ const ChatWindow = ({ chat, doctorToken, onBack, onChatUpdate }) => {
       markMessagesAsRead();
       
       // Set up polling for real-time updates
-      const pollingInterval = setInterval(fetchChatMessages, 2000); // Poll every 2 seconds for faster updates
+      const pollingInterval = setInterval(fetchChatMessages, 500); // Poll every 500ms for near real-time
       
       return () => {
         clearInterval(pollingInterval);

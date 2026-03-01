@@ -280,11 +280,11 @@ const LiveChat = () => {
         if (!hasError && initialLoadComplete) {
           chatInterval = setInterval(() => {
             if (!hasError && initialLoadComplete) fetchChatDataSilent();
-          }, 1000); // Every 1 second for instant updates
+          }, 500); // Every 500ms for near real-time
           
           unreadInterval = setInterval(() => {
             if (!hasError && initialLoadComplete) fetchUnreadCountSilent();
-          }, 2000); // Every 2 seconds for unread count
+          }, 1000); // Every 1 second for unread count
         }
       };
 

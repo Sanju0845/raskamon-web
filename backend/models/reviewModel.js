@@ -30,7 +30,7 @@ const reviewSchema = new mongoose.Schema({
   },
   isApproved: {
     type: Boolean,
-    default: false, // Admin approval required before showing publicly
+    default: true, // Reviews visible immediately
   },
   createdAt: {
     type: Date,

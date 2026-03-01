@@ -5,6 +5,10 @@ import "dotenv/config";
 import mongoose from "mongoose";
 import connectDB from "./config/mongodb.js";
 import connectCloudinary from "./config/cloudinary.js";
+// Import models to ensure they're registered
+import "./models/appointmentModel.js";
+import "./models/doctorModel.js";
+import "./models/userModel.js";
 // routes
 import adminRouter from './routes/adminRoute.js';
 import userRouter from './routes/userRoute.js';

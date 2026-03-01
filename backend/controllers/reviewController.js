@@ -1,11 +1,12 @@
 import reviewModel from '../models/reviewModel.js';
 import appointmentModel from '../models/appointmentModel.js';
 import doctorModel from '../models/doctorModel.js';
+import mongoose from 'mongoose';
 
 const createReview = async (req, res) => {
   try {
     const { appointmentId, rating, review } = req.body;
-    const userId = req.user._id;
+    const userId = new mongoose.Types.ObjectId(req.user.id);
 
     if (!appointmentId || !rating || !review) {
       return res.status(400).json({ success: false, message: 'All fields required' });
@@ -18,6 +19,20 @@ const createReview = async (req, res) => {
     const appointment = await appointmentModel.findById(appointmentId);
     if (!appointment) {
       return res.status(404).json({ success: false, message: 'Appointment not found' });
+    }
+
+    // Debug logging
+    console.log('Appointment found:', { 
+      id: appointment._id, 
+      userId: appointment.userId, 
+      docId: appointment.docId,
+      isCompleted: appointment.isCompleted,
+      keys: Object.keys(appointment.toObject())
+    });
+
+    // Safety check for userId
+    if (!appointment.userId) {
+      return res.status(400).json({ success: false, message: 'Invalid appointment data - missing userId' });
     }
 
     if (appointment.userId.toString() !== userId.toString()) {
@@ -35,8 +50,8 @@ const createReview = async (req, res) => {
 
     const newReview = new reviewModel({
       userId,
-      doctorId: appointment.docId,
-      appointmentId,
+      doctorId: new mongoose.Types.ObjectId(appointment.docId),
+      appointmentId: new mongoose.Types.ObjectId(appointmentId),
       rating,
       review,
     });
@@ -54,13 +69,13 @@ const createReview = async (req, res) => {
 const getDoctorReviews = async (req, res) => {
   try {
     const { doctorId } = req.params;
-    const reviews = await reviewModel.find({ doctorId, isApproved: true }).populate('userId', 'name').sort({ createdAt: -1 }).limit(20);
-    const approvedReviews = await reviewModel.find({ doctorId, isApproved: true });
-    const averageRating = approvedReviews.length > 0 ? approvedReviews.reduce((sum, r) => sum + r.rating, 0) / approvedReviews.length : 0;
+    const reviews = await reviewModel.find({ doctorId }).populate('userId', 'name').sort({ createdAt: -1 }).limit(20);
+    const allReviews = await reviewModel.find({ doctorId });
+    const averageRating = allReviews.length > 0 ? allReviews.reduce((sum, r) => sum + r.rating, 0) / allReviews.length : 0;
     
     res.status(200).json({
       success: true,
-      data: { reviews, averageRating: Number(averageRating.toFixed(1)), totalReviews: approvedReviews.length }
+      data: { reviews, averageRating: Number(averageRating.toFixed(1)), totalReviews: allReviews.length }
     });
   } catch (error) {
     console.error('Error:', error);
@@ -81,11 +96,15 @@ const getUserReviews = async (req, res) => {
 
 const getAllReviews = async (req, res) => {
   try {
-    const reviews = await reviewModel.find({}).populate('userId', 'name email').populate('doctorId', 'name speciality').populate('appointmentId', 'date time').sort({ createdAt: -1 });
+    const reviews = await reviewModel.find({})
+      .populate('userId', 'name email')
+      .populate({ path: 'doctorId', select: 'name speciality', model: 'doctor' })
+      .populate({ path: 'appointmentId', select: 'date slotDate slotTime', model: 'appointment' })
+      .sort({ createdAt: -1 });
     res.status(200).json({ success: true, data: reviews });
   } catch (error) {
-    console.error('Error:', error);
-    res.status(500).json({ success: false, message: 'Server error' });
+    console.error('Error fetching all reviews:', error.message);
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 
@@ -107,14 +126,31 @@ const updateReviewStatus = async (req, res) => {
   }
 };
 
+const deleteReview = async (req, res) => {
+  try {
+    const { reviewId } = req.params;
+    const review = await reviewModel.findById(reviewId);
+    if (!review) return res.status(404).json({ success: false, message: 'Review not found' });
+    
+    const doctorId = review.doctorId;
+    await reviewModel.findByIdAndDelete(reviewId);
+    await updateDoctorRating(doctorId);
+    
+    res.status(200).json({ success: true, message: 'Review deleted' });
+  } catch (error) {
+    console.error('Error deleting review:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
 const updateDoctorRating = async (doctorId) => {
   try {
-    const approvedReviews = await reviewModel.find({ doctorId, isApproved: true });
-    const averageRating = approvedReviews.length > 0 ? approvedReviews.reduce((sum, r) => sum + r.rating, 0) / approvedReviews.length : 0;
-    await doctorModel.findByIdAndUpdate(doctorId, { averageRating: Number(averageRating.toFixed(1)), totalReviews: approvedReviews.length });
+    const allReviews = await reviewModel.find({ doctorId });
+    const averageRating = allReviews.length > 0 ? allReviews.reduce((sum, r) => sum + r.rating, 0) / allReviews.length : 0;
+    await doctorModel.findByIdAndUpdate(doctorId, { averageRating: Number(averageRating.toFixed(1)), totalReviews: allReviews.length });
   } catch (error) {
     console.error('Error updating rating:', error);
   }
 };
 
-export { createReview, getDoctorReviews, getUserReviews, getAllReviews, updateReviewStatus };
+export { createReview, getDoctorReviews, getUserReviews, getAllReviews, updateReviewStatus, deleteReview };

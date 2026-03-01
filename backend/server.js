@@ -52,7 +52,7 @@ mongoose.connection.once("open", async () => {
 app.use(
   cors({
     origin: "*",
-    credentials: true,
+    credentials: false, // No cookies, using token headers instead
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: [
       "Content-Type",
@@ -69,7 +69,7 @@ app.options("*", (req, res) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
   res.header("Access-Control-Allow-Headers", "Content-Type, Authorization, token, atoken, dtoken");
-  res.header("Access-Control-Allow-Credentials", "true");
+  res.header("Access-Control-Allow-Credentials", "false");
   res.sendStatus(200);
 });
 

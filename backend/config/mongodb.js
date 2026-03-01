@@ -7,7 +7,11 @@ const connectDB = async () => {
       console.error("MONGO_URI/MONGODB_URI not set!");
       return false;
     }
-    await mongoose.connect(uri);
+    await mongoose.connect(uri, {
+      serverSelectionTimeoutMS: 30000, // 30 seconds for Vercel cold starts
+      socketTimeoutMS: 45000,
+      connectTimeoutMS: 30000,
+    });
     console.log("Connected to MongoDB");
     return true;
   } catch (error) {

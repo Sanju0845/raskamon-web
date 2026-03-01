@@ -7,8 +7,12 @@ export const AppContext = createContext();
 
 const AppContextProvider = ({ children }) => {
   const currencySymbol = "₹";
-  const backendUrl =
+  const rawBackendUrl =
     import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
+  // Remove trailing slash to prevent double slashes in API URLs
+  const backendUrl = rawBackendUrl.endsWith("/") 
+    ? rawBackendUrl.slice(0, -1) 
+    : rawBackendUrl;
 
   const [doctors, setDoctors] = useState([]);
   const [token, setToken] = useState(getValidToken());

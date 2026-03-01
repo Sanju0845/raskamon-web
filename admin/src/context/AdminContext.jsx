@@ -18,7 +18,11 @@ const AdminContextProvider = (props) => {
     localStorage.getItem("aToken") ? localStorage.getItem("aToken") : ""
   );
 
-  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  // Remove trailing slash to prevent double slashes in API URLs
+  const rawBackendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
+  const backendUrl = rawBackendUrl.endsWith("/") 
+    ? rawBackendUrl.slice(0, -1) 
+    : rawBackendUrl;
 
   const [doctors, setDoctors] = useState([]);
   const [appointments, setAppointments] = useState([]);

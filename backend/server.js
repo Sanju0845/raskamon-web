@@ -34,6 +34,20 @@ const app = express();
 const port = process.env.PORT || 4000;
 app.set("trust proxy", true);
 
+// CORS HEADERS FIRST - before any other middleware
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization, token, atoken, dtoken");
+  res.header("Access-Control-Allow-Credentials", "false");
+  
+  // Handle OPTIONS preflight immediately
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
+  next();
+});
+
 // -------- database ----------
 connectDB();
 connectCloudinary();
@@ -47,42 +61,7 @@ mongoose.connection.once("open", async () => {
   }
 });
 
-// -------- middlewares ---------
-// CORS FIRST - before any other middleware
-app.use(
-  cors({
-    origin: "*",
-    credentials: false, // No cookies, using token headers instead
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: [
-      "Content-Type",
-      "Authorization",
-      "token",
-      "atoken",
-      "dtoken",
-    ],
-  }),
-);
-
-// Handle OPTIONS preflight requests at the TOP level
-app.options("*", (req, res) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
-  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization, token, atoken, dtoken");
-  res.header("Access-Control-Allow-Credentials", "false");
-  res.sendStatus(200);
-});
-
 app.use(express.json({ limit: "400mb" }));
-
-// Add CORS headers to all responses (including error responses)
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
-  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization, token, atoken, dtoken");
-  res.header("Access-Control-Allow-Credentials", "true");
-  next();
-});
 
 // Serve uploaded files
 app.use("/uploads", express.static("uploads"));

@@ -50,9 +50,10 @@ mongoose.connection.once("open", async () => {
 // -------- middlewares ---------
 app.use(express.json({ limit: "400mb" }));
 
+// CORS configuration - allow all origins for now
 app.use(
   cors({
-    origin: true, // (OK for now, restrict later)
+    origin: "*",
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: [
@@ -64,6 +65,9 @@ app.use(
     ],
   }),
 );
+
+// Handle OPTIONS preflight requests explicitly
+app.options("*", cors());
 
 // Serve uploaded files
 app.use("/uploads", express.static("uploads"));

@@ -54,6 +54,7 @@ import axios from "axios";
 import Pricing from "./pages/Pricing";
 // Lazy load components
 const Doctors = lazy(() => import("./pages/Doctors"));
+const LiveChat = lazy(() => import("./pages/LiveChat"));
 
 // ScrollToTop component
 const ScrollToTop = () => {
@@ -132,18 +133,13 @@ const App = () => {
     }, 5000);
   }, []);
 
-  // Always fetch assessments and doctors on every page load
+  // Always fetch assessments and doctors on every page load (but not on chat page to prevent re-renders)
   useEffect(() => {
     getDoctorsData();
     if (token && userData?._id) {
       fetchUserAssessments();
     }
-  }, [location.pathname, token, userData?._id]);
-
-  // Temporary debug - remove this later
-  console.log("🚀 App.jsx - Environment check:");
-  console.log("VITE_GOOGLE_CLIENT_ID:", import.meta.env.VITE_GOOGLE_CLIENT_ID);
-  console.log("VITE_BACKEND_URL:", import.meta.env.VITE_BACKEND_URL);
+  }, [token, userData?._id]); // Removed location.pathname to prevent re-renders on chat page
 
   return (
     <>
@@ -162,6 +158,7 @@ const App = () => {
             <Route path="/" element={<Home />} />
             <Route path="/doctors" element={<Doctors />} />
             <Route path="/doctors/:speciality" element={<Doctors />} />
+            <Route path="/live-chat/:doctorId" element={<LiveChat />} />
             <Route path="/login" element={<Login />} />
             <Route path="/about" element={<About />} />
             <Route path="/services" element={<Services />} />

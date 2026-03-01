@@ -13,6 +13,7 @@ import {
   MessageSquare,
   FileText,
   Calendar,
+  MessageCircle,
 } from "lucide-react";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { NavLink } from "react-router-dom";
@@ -233,7 +234,18 @@ const Sidebar = () => {
               to={"/my-patient-reports"}
             >
               <Download size={18} />
-              <p>Patient Reports (30 Days)</p>
+              <p>Patient Reports</p>
+            </NavLink>
+            <NavLink
+              onClick={handleNavClick}
+              className={({ isActive }) =>
+                `flex items-center select-none bg-gray-50 gap-3 py-3.5 px-3 md:px-6 m-2 rounded-[5px] md:min-w-64 cursor-pointer transition-all duration-200 ease-in-out ${isActive ? "bg-primary text-white" : "hover:bg-gray-100"
+                }`
+              }
+              to={"/live-chat"}
+            >
+              <MessageCircle size={18} />
+              <p>Patient Messages</p>
             </NavLink>
           </ul>
         )}

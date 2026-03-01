@@ -20,6 +20,8 @@ import chatRouter from "./routes/chatRoute.js";
 import moodRoute from "./routes/moodRoute.js";
 import voiceRouter from "./routes/voiceRoute.js";
 import creditsRouter from "./routes/creditsRoute.js";
+import doctorChatRouter from "./routes/doctorChatRoute.js";
+import liveChatRouter from "./routes/liveChatRoute.js";
 import { verifyGeoIndex } from "./utils/verifyGeoIndex.js";
 
 // -------- app config ----------
@@ -76,6 +78,8 @@ app.use("/api/notifications", notificationRouter);
 app.use("/api/chat", chatRouter);
 app.use("/api/voice", voiceRouter);
 app.use("/api/credits", creditsRouter);
+app.use("/api/doctor-chat", doctorChatRouter);
+app.use("/api/live-chat", liveChatRouter);
 
 app.get("/", (req, res) => {
   res.send("API WORKING...");

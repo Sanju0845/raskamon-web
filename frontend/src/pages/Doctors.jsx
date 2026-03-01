@@ -12,6 +12,7 @@ import {
   FaFilter,
   FaPhone,
   FaCalendarAlt,
+  FaComments,
 } from "react-icons/fa";
 import axios from "axios";
 import CreditsDisplay from "../components/CreditsDisplay.jsx";
@@ -79,6 +80,7 @@ const Doctors = () => {
   // Fetch doctors with location (nearby)
   const getDoctorsData = async (lat, lon) => {
     try {
+      console.log('Fetching nearby doctors with lat:', lat, 'lon:', lon);
       const url = new URL(
         `${import.meta.env.VITE_BACKEND_URL}/api/doctor/list/nearby`,
       );
@@ -87,14 +89,22 @@ const Doctors = () => {
       if (speciality) url.searchParams.append("speciality", speciality);
 
       const { data } = await axios.get(url.toString());
+      console.log('Nearby doctors response:', data);
 
       if (data.success) {
-        setDoctors(data.data);
+        // Handle both response formats: data.doctors or data.data
+        let nearbyDoctors = data.doctors || data.data || [];
+        console.log('Processed nearby doctors:', nearbyDoctors);
+        // Filter by speciality if specified (in case backend doesn't filter)
+        if (speciality) {
+          nearbyDoctors = nearbyDoctors.filter((doc) => doc.speciality === speciality);
+        }
+        setDoctors(nearbyDoctors);
       } else {
         toast.error(data.message);
       }
     } catch (error) {
-      console.error(error);
+      console.error("Error fetching nearby doctors:", error);
       toast.error(error.response?.data?.message || error.message);
     }
   };
@@ -102,12 +112,15 @@ const Doctors = () => {
   // Fetch all doctors without location filter
   const getAllDoctors = async () => {
     try {
+      console.log('Fetching all doctors');
       const { data } = await axios.get(
         `${import.meta.env.VITE_BACKEND_URL}/api/doctor/list`,
       );
+      console.log('All doctors response:', data);
 
       if (data.success) {
         let allDoctors = data.doctors || [];
+        console.log('Processed all doctors:', allDoctors);
         // Filter by speciality if specified
         if (speciality) {
           allDoctors = allDoctors.filter((doc) => doc.speciality === speciality);
@@ -117,7 +130,7 @@ const Doctors = () => {
         console.error(data.message);
       }
     } catch (error) {
-      console.error("Error fetching doctors:", error);
+      console.error("Error fetching all doctors:", error);
     }
   };
 
@@ -126,12 +139,17 @@ const Doctors = () => {
   }, []);
 
   useEffect(() => {
+    console.log('Location state:', { location, locationDenied, speciality });
     if (location?.lat && location?.lon) {
       // Location available - fetch nearby doctors
+      console.log('Using location to fetch nearby doctors');
       getDoctorsData(location.lat, location.lon, speciality);
     } else if (locationDenied) {
       // Location denied - fetch all doctors
+      console.log('Location denied, fetching all doctors');
       getAllDoctors();
+    } else {
+      console.log('Location not yet determined');
     }
   }, [location, locationDenied, speciality]);
 
@@ -152,7 +170,6 @@ const Doctors = () => {
   };
 
   const specialities = [
-    "Counsellor",
     "Psychiatrist",
     "Clinical Psychologist",
     "Therapist",
@@ -161,6 +178,9 @@ const Doctors = () => {
     "Addiction Psychiatrist",
   ];
 
+  const handleChatWithDoctor = (doctor) => {
+    navigate(`/live-chat/${doctor._id}`);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-indigo-100">
@@ -416,7 +436,6 @@ const Doctors = () => {
                   <motion.div
                     key={`${animationKey}-${index}`}
                     whileHover={{ y: -10 }}
-                    onClick={() => handleAppointmentBooking(doctor._id)}
                     className="bg-gradient-to-br from-white to-purple-50 rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all cursor-pointer group flex flex-col h-full border border-purple-100"
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -532,14 +551,27 @@ const Doctors = () => {
                           </div>
                         </div>
 
-                        <motion.button
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
-                          className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-3 px-4 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2"
-                        >
-                          <FaCalendarAlt className="text-sm" />
-                          Book Appointment
-                        </motion.button>
+                        <div className="flex gap-3">
+                          <motion.button
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            onClick={() => handleChatWithDoctor(doctor)}
+                            className="flex-1 bg-white border-2 border-purple-200 text-purple-600 py-3 px-4 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 hover:bg-purple-50"
+                          >
+                            <FaComments className="text-sm" />
+                            Chat
+                          </motion.button>
+                          
+                          <motion.button
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            onClick={() => handleAppointmentBooking(doctor._id)}
+                            className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 text-white py-3 px-4 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2"
+                          >
+                            <FaCalendarAlt className="text-sm" />
+                            Book
+                          </motion.button>
+                        </div>
                       </div>
                     </div>
                   </motion.div>

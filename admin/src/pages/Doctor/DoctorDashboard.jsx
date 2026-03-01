@@ -1,7 +1,7 @@
 import { assets } from "@/assets/assets";
 import { AppContext } from "@/context/AppContext";
 import { DoctorContext } from "@/context/DoctorContext";
-import { CalendarDays, Check, Loader2, X, Brain, Users } from "lucide-react";
+import { CalendarDays, Check, Loader2, X, Brain, Users, MessageCircle } from "lucide-react";
 import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -183,15 +183,17 @@ const DoctorDashboard = () => {
                         {/* ------- cancel btn ------ */}
                         <TooltipProvider delayDuration={0}>
                           <Tooltip>
-                            <TooltipTrigger>
-                              <button
-                                onClick={() => cancelAppointment(item._id)}
-                                className="p-1 rounded text-red-400 border border-red-400 hover:border-transparent hover:text-white hover:bg-red-400 hover:scale-105 active:scale-50 transition-all duration-300 ease-in-out"
-                              >
-                                <span>
-                                  <X size={18} />
-                                </span>
-                              </button>
+                            <TooltipTrigger asChild>
+                              <div className="inline-block">
+                                <button
+                                  onClick={() => cancelAppointment(item._id)}
+                                  className="p-1 rounded text-red-400 border border-red-400 hover:border-transparent hover:text-white hover:bg-red-400 hover:scale-105 active:scale-50 transition-all duration-300 ease-in-out"
+                                >
+                                  <span className="flex items-center justify-center">
+                                    <X size={18} />
+                                  </span>
+                                </button>
+                              </div>
                             </TooltipTrigger>
                             <TooltipContent
                               side="left"
@@ -205,15 +207,17 @@ const DoctorDashboard = () => {
                         {/* ----- complete btn --------- */}
                         <TooltipProvider delayDuration={0}>
                           <Tooltip>
-                            <TooltipTrigger>
-                              <button
-                                onClick={() => completeAppointment(item._id)}
-                                className="p-1 rounded text-green-500 border border-green-500 hover:border-transparent hover:text-white hover:bg-green-500 hover:scale-105 active:scale-50 transition-all duration-300 ease-in-out"
-                              >
-                                <span>
-                                  <Check size={18} />
-                                </span>
-                              </button>
+                            <TooltipTrigger asChild>
+                              <div className="inline-block">
+                                <button
+                                  onClick={() => completeAppointment(item._id)}
+                                  className="p-1 rounded text-green-500 border border-green-500 hover:border-transparent hover:text-white hover:bg-green-500 hover:scale-105 active:scale-50 transition-all duration-300 ease-in-out"
+                                >
+                                  <span className="flex items-center justify-center">
+                                    <Check size={18} />
+                                  </span>
+                                </button>
+                              </div>
                             </TooltipTrigger>
                             <TooltipContent
                               side="right"
@@ -258,10 +262,21 @@ const DoctorDashboard = () => {
                 </div>
               </button>
 
-              <div className="text-center text-sm text-gray-500">
-                Click on any patient to view their mood tracking data and
-                insights
-              </div>
+              <button
+                onClick={() => navigate("/live-chat")}
+                className="w-full flex items-center gap-3 px-4 py-3 bg-green-50 hover:bg-green-100 rounded-lg transition-colors group"
+              >
+                <MessageCircle
+                  size={20}
+                  className="text-green-600 group-hover:text-green-700"
+                />
+                <div className="text-left">
+                  <p className="font-medium text-green-900">Patient Messages</p>
+                  <p className="text-sm text-green-700">
+                    Chat with patients and respond to queries
+                  </p>
+                </div>
+              </button>
             </div>
           </div>
         </div>

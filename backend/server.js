@@ -27,6 +27,9 @@ import blogPostRouter from './routes/blogPostRoute.js';
 import uploadRouter from './routes/uploadRoute.js';
 import moodTrackingRouter from './routes/moodTrackingRoute.js';
 import notificationRouter from './routes/notificationRoute.js';
+import paidChatRouter from './routes/paidChatRoute.js';
+import doctorPaidChatRouter from './routes/doctorPaidChatRoute.js';
+import { initializeSocket } from './services/socketService.js';
 import notificationService from './services/notificationService.js';
 
 // -------- app config ----------
@@ -84,6 +87,8 @@ app.use("/api/credits", creditsRouter);
 app.use("/api/doctor-chat", doctorChatRouter);
 app.use("/api/live-chat", liveChatRouter);
 app.use("/api/reviews", reviewRouter);
+app.use("/api/paid-chat", paidChatRouter);
+app.use("/api/doctor/paid-chat", doctorPaidChatRouter);
 
 app.get("/", (req, res) => {
   res.send("API WORKING...");
@@ -102,8 +107,12 @@ app.use((err, req, res, next) => {
 // -------- port listen -------
 // Only listen if not running on Vercel (Vercel handles this)
 if (process.env.NODE_ENV !== 'production') {
-  app.listen(port, () => {
+  const server = app.listen(port, () => {
     console.log("🚀 Server running on port", port);
+
+    // Initialize Socket.IO
+    initializeSocket(server);
+    console.log("🔌 Socket.IO initialized");
 
     notificationService.start();
     console.log("🔔 Notification service started");

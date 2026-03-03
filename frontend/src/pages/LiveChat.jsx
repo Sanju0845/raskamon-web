@@ -21,13 +21,12 @@ const LiveChat = () => {
   const [hasError, setHasError] = useState(false);
   const [initialLoadComplete, setInitialLoadComplete] = useState(false);
   const [previousMessageCount, setPreviousMessageCount] = useState(0);
-  const [sessionBalance, setSessionBalance] = useState(0);
   const messagesEndRef = useRef(null);
 
   // Fetch chat data
   const fetchChatData = async () => {
     try {
-      if (hasError) return; // Stop polling if there was an error
+      if (hasError) return;
       
       const { data: chatData } = await axios.get(
         `${import.meta.env.VITE_BACKEND_URL}/api/live-chat/user/chat/${doctorId}`,
@@ -39,15 +38,15 @@ const LiveChat = () => {
       if (chatData.success) {
         setDoctor(chatData.chat.doctorId);
         setChatMessages(chatData.chat.messages || []);
-        setHasError(false); // Reset error state on success
+        setHasError(false);
       }
     } catch (error) {
       console.error("Error fetching chat data:", error);
-      setHasError(true); // Set error state to stop polling
+      setHasError(true);
     }
   };
 
-  // Silent fetch for polling (doesn't trigger loading states)
+  // Silent fetch for polling
   const fetchChatDataSilent = async () => {
     try {
       if (hasError) return;
@@ -63,7 +62,6 @@ const LiveChat = () => {
         setDoctor(chatData.chat.doctorId);
         const newMessages = chatData.chat.messages || [];
         
-        // Only update if messages actually changed to prevent unnecessary re-renders
         if (JSON.stringify(newMessages) !== JSON.stringify(chatMessages)) {
           setChatMessages(newMessages);
           setHasError(false);
@@ -159,19 +157,15 @@ const LiveChat = () => {
 
       if (data.success) {
         console.log("Message sent successfully");
-        // Refetch chat messages to get the latest state
         await fetchChatData();
-        // Force scroll to bottom after sending (faster)
         setTimeout(() => {
           scrollToBottom();
         }, 100);
       }
     } catch (error) {
       console.error("Error sending message:", error);
-      // Remove the temp message if it failed
       setChatMessages(prev => prev.filter(msg => msg._id !== tempMessage._id));
       
-      // Show error message
       const errorMessage = {
         _id: Date.now().toString(),
         sender: "doctor",
@@ -192,7 +186,6 @@ const LiveChat = () => {
         messagesEndRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
       }
     } catch (error) {
-      // Fallback for older browsers
       const chatContainer = messagesEndRef.current?.parentElement;
       if (chatContainer) {
         chatContainer.scrollTop = chatContainer.scrollHeight;
@@ -237,7 +230,6 @@ const LiveChat = () => {
 
   useEffect(() => {
     if (doctorId && token) {
-      // Initial fetch only
       const initialFetch = async () => {
         try {
           setLoading(true);
@@ -276,22 +268,20 @@ const LiveChat = () => {
       
       initialFetch();
       
-      // Set up polling only after initial load is complete
       let chatInterval, unreadInterval;
       
       const startPolling = () => {
         if (!hasError && initialLoadComplete) {
           chatInterval = setInterval(() => {
             if (!hasError && initialLoadComplete) fetchChatDataSilent();
-          }, 500); // Every 500ms for near real-time
+          }, 500);
           
           unreadInterval = setInterval(() => {
             if (!hasError && initialLoadComplete) fetchUnreadCountSilent();
-          }, 1000); // Every 1 second for unread count
+          }, 1000);
         }
       };
 
-      // Start polling after a short delay
       const pollingTimeout = setTimeout(startPolling, 1000);
       
       return () => {
@@ -303,20 +293,17 @@ const LiveChat = () => {
   }, [doctorId, token]);
 
   useEffect(() => {
-    // Scroll to bottom whenever messages change or new messages arrive
     if (chatMessages.length > 0) {
       const timeout = setTimeout(() => {
         scrollToBottom();
-      }, 50); // Reduced delay for faster scroll
+      }, 50);
       return () => clearTimeout(timeout);
     }
-  }, [chatMessages, previousMessageCount]); // Trigger on messages and count change
+  }, [chatMessages, previousMessageCount]);
 
-  // Update previous message count when messages change
   useEffect(() => {
     if (chatMessages.length !== previousMessageCount) {
       setPreviousMessageCount(chatMessages.length);
-      // Force immediate scroll when message count increases
       if (chatMessages.length > previousMessageCount) {
         setTimeout(() => {
           scrollToBottom();
@@ -331,20 +318,10 @@ const LiveChat = () => {
     }
   }, [unreadCount]);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-indigo-100 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading chat...</p>
-        </div>
-      </div>
-    );
-  }
-
   const messageGroups = groupMessagesByDate(chatMessages);
 
-  return (
+  // Chat UI Component
+  const ChatUI = () => (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-indigo-100">
       {/* Header */}
       <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
@@ -378,6 +355,16 @@ const LiveChat = () => {
                 </div>
               </div>
             </div>
+            
+            {/* Session Balance Display */}
+            {activeSession && (
+              <div className="bg-white/20 backdrop-blur-sm rounded-lg px-3 py-1.5">
+                <span className="text-sm">
+                  Balance: ₹{(activeSession.currentBalance || 0).toFixed(2)}
+                </span>
+              </div>
+            )}
+            
             <button
               onClick={() => navigate(`/appointment/${doctorId}`)}
               className="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-xl transition-colors"
@@ -450,89 +437,52 @@ const LiveChat = () => {
             )}
           </div>
 
-  return (
-    <PaidChatGuard doctorId={doctorId} onSessionStart={setActiveSession}>
-      <div className="min-h-screen bg-gray-50">
-        {/* Existing chat UI */}
-        <div className="max-w-4xl mx-auto">
-          <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-            {/* Chat Header with Balance */}
-            <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white p-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={() => navigate(-1)}
-                    className="p-2 hover:bg-white/20 rounded-full transition-colors"
-                  >
-                    <FaArrowLeft />
-                  </button>
-                  <div>
-                    <h1 className="font-semibold">Dr. {doctor?.name}</h1>
-                    <p className="text-sm text-purple-200">{doctor?.speciality}</p>
-                  </div>
-                </div>
-                
-                {/* Session Balance Display */}
-                {activeSession && (
-                  <div className="bg-white/20 backdrop-blur-sm rounded-lg px-3 py-1.5">
-                    <span className="text-sm">
-                      Balance: ₹{(activeSession.currentBalance || 0).toFixed(2)}
-                    </span>
-                  </div>
+          {/* Input Area */}
+          <div className="p-6 border-t border-gray-200 bg-white">
+            <div className="flex gap-3">
+              <input
+                type="text"
+                value={newMessage}
+                onChange={(e) => setNewMessage(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && handleSendMessage()}
+                placeholder="Type your message..."
+                className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none"
+                disabled={chatLoading}
+              />
+              <button
+                onClick={handleSendMessage}
+                disabled={chatLoading || !newMessage.trim()}
+                className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              >
+                {chatLoading ? (
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                ) : (
+                  <FaPaperPlane />
                 )}
-              </div>
-            </div>
-
-            {/* Rest of the chat UI */}
-            <div className="h-[calc(100vh-200px)] flex flex-col">
-              {/* Messages */}
-              <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                {chatMessages.map((msg, idx) => (
-                  <div
-                    key={idx}
-                    className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
-                  >
-                    <div
-                      className={`max-w-[70%] p-3 rounded-2xl ${
-                        msg.sender === 'user'
-                          ? 'bg-purple-600 text-white'
-                          : 'bg-gray-100 text-gray-800'
-                      }`}
-                    >
-                      <p>{msg.message}</p>
-                      <span className="text-xs opacity-70">
-                        {new Date(msg.timestamp).toLocaleTimeString()}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-                <div ref={messagesEndRef} />
-              </div>
-
-              {/* Input */}
-              <div className="p-4 border-t">
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={newMessage}
-                    onChange={(e) => setNewMessage(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-                    placeholder="Type a message..."
-                    className="flex-1 border rounded-lg px-4 py-2"
-                  />
-                  <button
-                    onClick={handleSendMessage}
-                    disabled={!newMessage.trim()}
-                    className="bg-purple-600 text-white px-4 py-2 rounded-lg disabled:opacity-50"
-                  >
-                    <FaPaperPlane />
-                  </button>
-                </div>
-              </div>
+                Send
+              </button>
             </div>
           </div>
         </div>
       </div>
+    </div>
+  );
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-indigo-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading chat...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Wrap chat UI with PaidChatGuard
+  return (
+    <PaidChatGuard doctorId={doctorId} onSessionStart={setActiveSession}>
+      <ChatUI />
     </PaidChatGuard>
   );
 };

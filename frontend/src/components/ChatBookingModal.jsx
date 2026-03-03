@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, Clock, CreditCard, Wallet, Coins, ChevronRight, Check, AlertCircle } from 'lucide-react';
 import axios from 'axios';
-import { loadScript } from '../utils/loadScript';
 
 const ChatBookingModal = ({ isOpen, onClose, doctorId, doctorPricing, onBookingSuccess }) => {
   const [step, setStep] = useState(1); // 1: Duration, 2: Payment Method, 3: Confirmation
@@ -89,12 +88,7 @@ const ChatBookingModal = ({ isOpen, onClose, doctorId, doctorPricing, onBookingS
   };
 
   const handleRazorpayPayment = async (order, sessionId) => {
-    const res = await loadScript('https://checkout.razorpay.com/v1/checkout.js');
-    if (!res) {
-      setError('Razorpay SDK failed to load');
-      return;
-    }
-
+    // Razorpay is already loaded via script tag in index.html
     const options = {
       key: import.meta.env.VITE_RAZORPAY_KEY_ID,
       amount: order.amount,

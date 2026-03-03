@@ -1,0 +1,10 @@
+providers = ["node"]
+
+[phases.setup]
+nixpkgsArchive = "ba18117be178afed5a700f951f3b9c8f8e445381"
+
+[phases.build]
+cmds = ["npm install"]
+
+[start]
+cmd = "npm start"
